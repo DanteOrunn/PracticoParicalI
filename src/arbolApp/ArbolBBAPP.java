@@ -111,6 +111,19 @@ public class ArbolBBAPP {
         } while (option != 4);
     }
 
+    public void imprimirPorCodigoRubro(int codigoRubro){
+        Proveedor prov = new Proveedor();
+        boolean bus = true;
+        Nodo b = null;
+
+        while (bus) {
+            System.out.print("Ingrese Codigo de Rubro:");
+            int codigoBuscado = Consola.leerInt();
+            prov.setCodigoRubro(codigoRubro);
+            
+        }
+    }
+
     public void imprimirAscendente(){
         abb.preorden();
     }

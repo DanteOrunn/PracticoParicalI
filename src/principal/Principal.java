@@ -1,60 +1,100 @@
 package principal;
 
 import utilidad.*;
-import arbolApp.*;
 import dominio.*;
+import estructuras.ArbolBinarioBusqueda;
+import nodoAB.*;
 
 public class Principal {
-    
+
     public static void main(String[] args) {
-        
-        ArbolBBAPP arbol = new ArbolBBAPP();
+
+        ArbolBinarioBusqueda arbol = new ArbolBinarioBusqueda();
         ListaOrdenada list = new ListaOrdenada();
         int op = 0;
 
-        do{
+        do {
 
             menu();
             op = Consola.leerInt();
 
-            switch(op){
-                case 1:
-                    Proveedor prov = new Proveedor();
-                    prov.cargarInformacion();
-                    int concidencia = prov.getDni();
+            switch (op) {
+            case 1:
+                Proveedor prov = new Proveedor();
+                prov.cargarInformacion();
+                int concidencia = prov.getDni();
 
-                    if (!buscarClaveRepetida(concidencia, list)) {
-                        list.insertar(prov);    
-                    }
-                    break;
-                case 2:
-                    if (!list.listaVacia()) {
-                        arbol.generarArbol(list);
-                    } else {
-                        Consola.emitirMensajeLN("Lista Vaica!!");
-                    }
-                    break;
-                case 3:
+                if (!buscarClaveRepetida(concidencia, list)) {
+                    list.insertar(prov);
+                }
+                break;
+            case 2:
+                if (!list.listaVacia()) {
+                    ListaOrdenada p = list;
+                    ArbolBinarioBusqueda b = arbol;
+                    arbol = cargarArbol(p, b);
+                    Consola.emitirMensajeLN("\n=================================");
+                    Consola.emitirMensajeLN("=         Arbol Generado        =");
+                    Consola.emitirMensajeLN("=================================\n");
+                } else {
+                    Consola.emitirMensajeLN("\n=================================");
+                    Consola.emitirMensajeLN("=          Lista Vacia          =");
+                    Consola.emitirMensajeLN("=================================\n");
+                }
+                break;
+            case 3:
+                if (!arbol.esVacio()) {
+                    Proveedor provBuscado = new Proveedor();
+                    
                     Consola.emitirMensaje("DNI:");
                     int dniBuscado = Consola.leerInt();
+                    provBuscado.setDni(dniBuscado);
 
-                    if (buscarDni(dniBuscado, list)) {
-                        buscarYMostrar(dniBuscado, list);
+                    Nodo nodoBuscado = arbol.buscar(provBuscado);
+                    
+                    if (nodoBuscado != null){
+                        Proveedor muestra = (Proveedor) nodoBuscado.getDato();
+                        Consola.emitirMensajeLN("=========================================");
+                        Consola.emitirMensajeLN("        Informacion del Proveedor        ");
+                        Consola.emitirMensajeLN("=========================================");
+                        muestra.mostrarDatos();
+
+                        if (validarActualizacion()) {
+                            muestra.actualizarDatos();
+                            list.insertar(muestra);
+                            arbol.insertar(muestra, dniBuscado);
+                        }
+
+                    } else {
+                        Consola.emitirMensajeLN("Proveedor no encontrado en el arbol");
                     }
-                    break;
-                case 4:
-                    break;
-                case 0:
-                    break;
-                default:
-                    break;
+
+                } else {
+                    Consola.emitirMensajeLN("\n=================================");
+                    Consola.emitirMensajeLN("=          Arbol Vacio!          =");
+                    Consola.emitirMensajeLN("=================================\n");
+                }
+                break;
+            case 4:
+                if (!arbol.esVacio()) {
+                    mostrarXCodigoRubro(arbol);
+                } else {
+                    Consola.emitirMensajeLN("\n=================================");
+                    Consola.emitirMensajeLN("=          Arbol Vacio!          =");
+                    Consola.emitirMensajeLN("=================================\n");
+                }
+                break;
+            case 0:
+                break;
+            default:
+                break;
             }
 
-        }while(op != 0);
+        } while (op != 0);
 
     }
 
-    public static void menu(){
+    public static void menu() {
         System.out.println("====================================");
         System.out.println("**        MENU DE OPCIONES        **");
         System.out.println("====================================");
@@ -64,15 +104,24 @@ public class Principal {
         System.out.println("** 4-Listar Proveedores           **");
         System.out.println("** 0-Salir                        **");
         System.out.println("====================================");
-        System.out.println("Opcion:");
+        System.out.print("Opcion:");
     }
 
-    public static boolean buscarClaveRepetida(int dni, ListaOrdenada list){
+    public static boolean validarActualizacion(){
+        Consola.emitirMensaje("¿Desea actualizar los Datos?\n");
+        boolean validar = Consola.confirmar();
+
+        return validar;
+    }
+
+    public static boolean buscarClaveRepetida(int dni, ListaOrdenada lista) {
         boolean busqueda = false;
-        ListaOrdenada ax = list;
+        ListaOrdenada ax = lista;
 
         if (ax.listaVacia()) {
-            Consola.emitirMensajeLN("Lista Vacia!!");
+            Consola.emitirMensajeLN("\n=================================");
+            Consola.emitirMensajeLN("=          Lista Vacia          =");
+            Consola.emitirMensajeLN("=================================\n");
         } else {
             while (!ax.listaVacia()) {
                 Proveedor prov = ax.eliminar().getDato();
@@ -83,20 +132,26 @@ public class Principal {
         }
 
         if (busqueda) {
-            Consola.emitirMensajeLN("Elemento existente");
+            Consola.emitirMensajeLN("\n=================================");
+            Consola.emitirMensajeLN("=      Elemento existente       =");
+            Consola.emitirMensajeLN("=================================\n");
         } else {
-            Consola.emitirMensajeLN("Elemento no encontrado");
+            Consola.emitirMensajeLN("\n=================================");
+            Consola.emitirMensajeLN("=      Agregacion Realizada      =");
+            Consola.emitirMensajeLN("==================================\n");
         }
 
         return busqueda;
     }
 
-    public static boolean buscarDni(int dni, ListaOrdenada list){
+    public static boolean buscarDni(int dni, ListaOrdenada lista) {
         boolean busqueda = false;
-        ListaOrdenada ax = list;
+        ListaOrdenada ax = lista;
 
         if (ax.listaVacia()) {
-            Consola.emitirMensajeLN("Lista Vacia");
+            Consola.emitirMensajeLN("\n=================================");
+            Consola.emitirMensajeLN("=          Lista Vacia          =");
+            Consola.emitirMensajeLN("=================================\n");
         } else {
             while (!ax.listaVacia()) {
                 Proveedor prov = ax.eliminar().getDato();
@@ -109,20 +164,41 @@ public class Principal {
         return busqueda;
     }
 
-    public static void buscarYMostrar(int dni, ListaOrdenada list){
-        ListaOrdenada ax = list;
-        boolean busqueda = false;
+    public static void buscarYMostrar(int dni, ListaOrdenada lista) {
+        ListaOrdenada ax = lista;
 
         if (ax.listaVacia()) {
-            Consola.emitirMensajeLN("Lista Vacia");
+            Consola.emitirMensajeLN("\n=================================");
+            Consola.emitirMensajeLN("=          Lista Vacia          =");
+            Consola.emitirMensajeLN("=================================\n");
         } else {
-            while(!ax.listaVacia()){
+            while (!ax.listaVacia()) {
                 Proveedor prov = ax.eliminar().getDato();
                 if (prov.getDni() == dni) {
-                    Consola.emitirMensajeLN("\tInformacion del Proveedor\n" + prov.toString());
-                    busqueda = true;
+                    Consola.emitirMensajeLN("\tInformacion del Proveedor\n");
+                    prov.mostrarDatos();
                 }
             }
+        }
+    }
+
+    public static ArbolBinarioBusqueda cargarArbol(ListaOrdenada lista, ArbolBinarioBusqueda arbolBB){
+        while (!lista.listaVacia()) {
+            Proveedor prov = lista.eliminar().getDato();
+            int axDni = prov.getDni();
+            arbolBB.insertar(prov, axDni);
+        }
+        return arbolBB;
+    }
+
+    public static void mostrarXCodigoRubro(ArbolBinarioBusqueda arbolBB){
+        ArbolBinarioBusqueda axArbol = arbolBB;
+
+        Consola.emitirMensaje("Codigo de Rubro:");
+        int codigoBuscado = Consola.leerInt();
+
+        while (!axArbol.esVacio()) {
+            
         }
     }
 

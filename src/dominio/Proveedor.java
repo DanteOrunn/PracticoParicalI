@@ -134,6 +134,18 @@ public class Proveedor implements Comparador{
         } while (op != 0);
     }
 
+    public void mostrarDatos(){
+        Consola.emitirMensajeLN("\t=========================================");
+        Consola.emitirMensajeLN("\t        Informacion del Proveedor        ");
+        Consola.emitirMensajeLN("\t=========================================");
+        Consola.emitirMensajeLN("DNI:" + dni);
+        Consola.emitirMensajeLN("Codigo de Rubro:"+ codigoRubro);
+        Consola.emitirMensajeLN("Apellido:" + apellido);
+        Consola.emitirMensajeLN("Direccion:" + direccion);
+        Consola.emitirMensajeLN("Contacto:" + contacto);
+        Consola.emitirMensajeLN("Email:" + eMail);
+    }
+
     private void menuActualizacion(){
         Consola.emitirMensajeLN("=====================================");
         Consola.emitirMensajeLN("        Menu de Actualizacion        ");

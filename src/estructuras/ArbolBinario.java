@@ -19,7 +19,7 @@ public class ArbolBinario {
         return raiz;
     }
 
-    boolean esVacio() {
+    public boolean esVacio() {
         return raiz == null;
     }
 

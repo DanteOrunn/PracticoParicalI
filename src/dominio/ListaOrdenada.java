@@ -66,12 +66,6 @@ public class ListaOrdenada extends Lista {
             band = true;
         }
 
-        if (band) {
-            prt("Elemento eliminado");
-        } else {
-            prt("Elemento inexistente");
-        }
-
         return x;
     }
 
